@@ -123,7 +123,7 @@ function synthesizeToOgg(inputFiles, outputFilename, smoothness = 0.5, speed = 1
     const VOWEL_DURATION = 0.20;    
     const VOWEL_LOUDNESS = -14;     
     const CONSONANT_DURATION = VOWEL_DURATION / 2; 
-    const CONSONANT_LOUDNESS = VOWEL_LOUDNESS - 10; 
+    const CONSONANT_LOUDNESS = VOWEL_LOUDNESS + 4; 
 
     console.log(`Stitching ${inputFiles.length} nodes (Smoothness: ${blendFactor}, Speed: ${speedFactor}x)...`);
 
@@ -239,7 +239,7 @@ module.exports = {
 
         const textToSay = interaction.options.getString("message");
         const smoothness = 0.3;
-        const speed = 2;
+        const speed = 1.7;
 
         try {
             const { audioPaths, cleanPhonemes } = getPhonemeFiles(textToSay, soundsDir);
