@@ -7,7 +7,6 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto"); 
 
-
 ffmpeg.setFfmpegPath(ffmpegStatic);
 ffmpeg.setFfprobePath(ffprobeStatic.path);
 
@@ -18,7 +17,6 @@ const outputFile = path.join(__dirname, "..", "..", "output_speech.ogg");
 const customWordsPath = path.join(__dirname, "..", "..", "words.json");
 
 const VOWELS = new Set(["AA", "AE", "AH", "AO", "AW", "AY", "EH", "ER", "EY", "IH", "IY", "OW", "OY", "UH", "UW"]);
-
 
 let customDictionary = {};
 if (fs.existsSync(customWordsPath)) {
@@ -31,11 +29,15 @@ if (fs.existsSync(customWordsPath)) {
 }
 
 function getPhonemeFiles(text, soundsDirectory) {
-    const tokens = text.toLowerCase().match(/[a-z']+|[.,!?;: ]/g) || [];
+    const DIGIT_MAP = {
+        "0": "zero", "1": "one", "2": "two", "3": "three", "4": "four",
+        "5": "five", "6": "six", "7": "seven", "8": "eight", "9": "nine"
+    };
+
+    const tokens = text.toLowerCase().match(/[a-z']+|\d|[.,!?;: ]/g) || [];
     const audioPaths = [];
     const cleanPhonemes = [];
 
-    
     function resolveWordPhonemes(word) {
         let phonemeString = "";
         if (customDictionary[word]) {
@@ -61,7 +63,6 @@ function getPhonemeFiles(text, soundsDirectory) {
             audioPaths.push("REST_1.0");
             cleanPhonemes.push("·");
         } else {
-            
             console.warn(`Word "${word}" not found in database. Spelling out as acronym.`);
             const letters = word.split("");
             letters.forEach((letter) => {
@@ -83,6 +84,11 @@ function getPhonemeFiles(text, soundsDirectory) {
         }
         if (token === " " || token === "") {
             return; 
+        }
+
+        if (DIGIT_MAP[token]) {
+            resolveWordPhonemes(DIGIT_MAP[token]);
+            return;
         }
 
         resolveWordPhonemes(token);
@@ -194,7 +200,6 @@ function synthesizeToOgg(inputFiles, outputFilename, smoothness = 0.5, speed = 1
 
     filterString += `; ${masterBlendOutput}atempo=${speedFactor.toFixed(2)}[outa]`;
 
-    
     const tempFileName = `filter_${crypto.randomBytes(6).toString("hex")}.txt`;
     const tempFilterFile = path.join(process.cwd(), tempFileName);
     
@@ -204,7 +209,6 @@ function synthesizeToOgg(inputFiles, outputFilename, smoothness = 0.5, speed = 1
       return reject(new Error(`Failed to create temp filter script: ${writeErr.message}`));
     }
 
-    
     command
       .inputOptions(['-filter_complex_script', tempFileName]) 
       .map('[outa]')
@@ -223,7 +227,6 @@ function synthesizeToOgg(inputFiles, outputFilename, smoothness = 0.5, speed = 1
         resolve(); 
       });
 
-      
       command.save(outputFilename);
   });
 }
