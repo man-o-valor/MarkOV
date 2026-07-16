@@ -16,7 +16,7 @@ const soundsDir = path.join(__dirname, "..", "..", "phonemes");
 const outputFile = path.join(__dirname, "..", "..", "output_speech.ogg");
 const customWordsPath = path.join(__dirname, "..", "..", "words.json");
 
-const VOWELS = new Set(["AA", "AE", "AH", "AO", "AW", "AY", "EH", "ER", "EY", "IH", "IY", "OW", "OY", "UH", "UW"]);
+const VOWELS = new Set(["AA", "AE", "AH", "AO", "AW", "AY", "EH", "ER", "EY", "IH", "IY", "OW", "OY", "UH", "UW", "NG"]);
 
 let customDictionary = {};
 if (fs.existsSync(customWordsPath)) {
@@ -126,7 +126,7 @@ function synthesizeToOgg(inputFiles, outputFilename, smoothness = 0.5, speed = 1
     const blendFactor = Math.max(0, Math.min(1, smoothness));
     const speedFactor = Math.max(0.5, Math.min(2.0, speed));
 
-    const VOWEL_DURATION = 0.20;    
+    const VOWEL_DURATION = 0.30;    
     const VOWEL_LOUDNESS = -14;     
     const CONSONANT_DURATION = VOWEL_DURATION / 2; 
     const CONSONANT_LOUDNESS = VOWEL_LOUDNESS + 4; 
@@ -242,7 +242,7 @@ module.exports = {
 
         const textToSay = interaction.options.getString("message");
         const smoothness = 0.3;
-        const speed = 1.7;
+        const speed = 2;
 
         try {
             const { audioPaths, cleanPhonemes } = getPhonemeFiles(textToSay, soundsDir);
